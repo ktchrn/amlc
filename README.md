@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/ktchrn/amlc.svg?branch=master)](https://travis-ci.org/ktchrn/amlc)
 # amlc
 -----
 `amlc` is a tool for analytically marginalizing over linear continuum parameters in models of absorption line spectra.
