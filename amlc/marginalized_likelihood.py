@@ -1,30 +1,74 @@
-"""
-Docstring
-"""
-
+__all__ = ['MarginalizedLikelihood']
 
 import numpy as np
 from scipy.linalg import solve_triangular
+
 from .covariance_matrix import DiagonalCovarianceMatrix, GeneralCovarianceMatrix
 
 
-__all__ = ['MarginalizedLikelihood']
-
-
 class MarginalizedLikelihood(object):
-    """docstring for Marginalizer."""
-    def __init__(self, y_obs, y_cov, A_m, A_b, L=None, LT=None, c_cov=None):
+    """
+    A class for computing continuum parameter-marginalized likelihoods.
+
+    MarginalizedLikelihood stores parameters of a given analysis problem
+    and, when called, uses them to compute marginalized likelihoods and
+    related quantities.
+
+    Parameters
+    ----------
+    y_obs : one-dimensional array-like
+        The observed spectrum that is being analyzed.
+
+    y_cov : one-dimensional array-like, two-dimensional array-like, or
+                object implementing the CovarianceMatrix interface
+        The data covariance matrix. Can be a CovarianceMatrix or an array that
+        can be converted to a CovarianceMatrix. Both dimensions of y_cov should
+        have the same length as y_obs.
+
+    A_m : two-dimensional array-like
+        The continuum design matrix.
+
+    A_b : two-dimensional array-like or None (optional)
+        The foreground design matrix. If there is no linear foreground term,
+        A_b should be None.
+
+    L : an array, LinearOperator, or other object implementing the matrix
+            multiplication interface (optional)
+        The line spread function. If the line spread function is trivial,
+        L should be None.
+
+    LT : same as L (optional)
+        The transpose or adjoint of L, in case if this is not available as L.T.
+
+    c_cov : same as y_cov (optional)
+        Covariance matrix of the prior on the continuum parameters. To use the
+        improper uniform prior, c_cov should be None.
+
+    Methods
+    -------
+    __call__(d_theta, mu_m, mu_b, keyword arguments)
+        Access point for the marginalized likelihood and its gradient as well
+        as the conditional distribution of the continuum and foreground
+        parameters.
+
+    get_unmarginalized_likelihood(c, d_theta, mu_m, mu_b)
+        The unmarginalized likelihood. Requires specifying a set of continuum
+        and foreground parameters.
+
+    """
+    def __init__(self, y_obs, y_cov, A_m, A_b=None, L=None, LT=None, c_cov=None):
         super(MarginalizedLikelihood, self).__init__()
         #store inputs
-        self.y = y_obs
-        self.A_m = A_m
-        self.A_b = A_b
+        self.y = np.squeeze(np.asarray(y_obs))
+        self.A_m = np.asarray(A_m)  #has to be a matrix
+        self.A_b = A_b  #could be None
 
         #store shapes
         self.n_y = self.y.size
         self.n_dth = self.A_m.shape[0]
         self.n_mnlp = self.A_m.shape[1]
         if self.A_b is not None:
+            self.A_b = np.asarray(self.A_b)
             self.n_anlp = self.A_b.shape[1]
         else:
             self.n_anlp = 0
@@ -76,7 +120,7 @@ class MarginalizedLikelihood(object):
                                         - 0.5 * self.n_y * np.log(2.*np.pi))
 
         self.B_prime = np.zeros([self.n_dth, self.n_nlp])
-        self.B_prime[:, :self.n_mnlp] = A_m
+        self.B_prime[:, :self.n_mnlp] = self.A_m
 
         self.L = L
         if L is None:

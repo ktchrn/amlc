@@ -1,17 +1,25 @@
-"""
-Docstring
-"""
-
+__all__ = ['DiagonalCovarianceMatrix', 'GeneralCovarianceMatrix']
 
 import numpy as np
 from scipy.linalg import cholesky, cho_solve
 
 
-__all__ = ['CovarianceMatrix', 'DiagonalCovarianceMatrix', 'GeneralCovarianceMatrix']
-
-
 class CovarianceMatrix(object):
-    """docstring for CovarianceMatrix."""
+    """
+    A template class for covariance matrices.
+
+    CovarianceMatrix defines a unified interface for interacting with
+    covariance matrices. Subclasses need to implement left multiplication by
+    the inverse of the covariance matrix (the apply_inverse method), at the
+    very least.
+
+
+    Attributes
+    ----------
+    shape : list
+        Shape of the covariance matrix represented by the class.
+    """
+
     def __init__(self, *args):
         super(CovarianceMatrix, self).__init__()
         self.shape = None
@@ -42,12 +50,21 @@ class CovarianceMatrix(object):
 
 
 class DiagonalCovarianceMatrix(CovarianceMatrix):
-    """docstring for DiagonalCovarianceMatrix."""
+    """
+    A covariance matrix with no off-diagonal terms.
+
+    Parameters
+    __________
+    variance_vector : one-dimensional array-like
+        Diagonal terms of a covariance matrix. Should all be strictly positive.
+    """
     def __init__(self, variance_vector):
         super(DiagonalCovarianceMatrix, self).__init__()
         self._variances = np.atleast_1d(np.asarray(variance_vector, dtype=np.double))
         if len(self._variances.shape) != 1:
             raise ValueError("variance_vector has more than one non-trivial dimension.")
+        elif (self._variances <= 0).any():
+            raise ValueError("variance_vector cannot contain zeros.")
         self.shape = self._variances.shape
         self._precisions = 1. / self._variances
 
@@ -71,7 +88,14 @@ class DiagonalCovarianceMatrix(CovarianceMatrix):
 
 
 class GeneralCovarianceMatrix(CovarianceMatrix):
-    """docstring for GeneralCovarianceMatrix."""
+    """
+    A covariance matrix without special structure.
+
+    Parameters
+    ----------
+    covariance_matrix : two-dimensional array-like
+        An arbitrary covariance matrix. Should be positive definite.
+    """
     def __init__(self, covariance_matrix):
         super(GeneralCovarianceMatrix, self).__init__()
         covariance_matrix = np.asarray(covariance_matrix, dtype=np.double)
