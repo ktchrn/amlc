@@ -55,7 +55,8 @@ class MarginalizedLikelihood(object):
         else:
             #assume prior on c is proper and Gaussian
             if (hasattr(c_cov, 'get_logdet') and hasattr(c_cov, 'apply_inverse')
-                    and hasattr(c_cov, 'get_inverse') and hasattr(c_cov, 'add_inverse')):
+                and hasattr(c_cov, 'get_inverse')
+                and hasattr(c_cov, 'add_inverse')):
                 self.Lambda = c_cov
             else:
                 c_cov = np.atleast_1d(np.asarray(c_cov, dtype=np.double))
