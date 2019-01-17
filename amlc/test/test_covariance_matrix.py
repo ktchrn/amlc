@@ -1,6 +1,6 @@
 import pytest
-from ..covariance_matrix import DiagonalCovarianceMatrix, GeneralCovarianceMatrix
 import numpy as np
+from ..covariance_matrix import DiagonalCovarianceMatrix, GeneralCovarianceMatrix
 
 
 @pytest.fixture
