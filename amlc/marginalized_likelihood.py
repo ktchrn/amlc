@@ -246,7 +246,7 @@ class MarginalizedLikelihood(object):
         C = L_B.T @ Kinv_L_B
         if self.Lambda is not None:
             self.Lambda.add_inverse(C)
-        C = covariance_matrix.GeneralCovarianceMatrix(C)
+        C = GeneralCovarianceMatrix(C)
         cmu = C.apply_inverse(B.T @ LT_Kinv_r)
 
         return_dict = {}
@@ -329,6 +329,7 @@ class MarginalizedLikelihood(object):
         logp : number
             The unmarginalized log-likelihood given the supplied parameters.
         """
+
         B = np.empty([self.n_dth, self.n_nlp])
         np.multiply(d_theta[:, None], self.A_m, out=B[:, :self.n_mnlp])
         if self.A_b is not None:
@@ -338,9 +339,11 @@ class MarginalizedLikelihood(object):
         if not (self.L is None):
             y_model = self.L @ y_model
         r = self.y - y_model
-        logp = -0.5 * np.sum(r * self.K.apply_inverse(r))
+        logp = (-0.5 * np.sum(r * self.K.apply_inverse(r))
+                - 0.5 * self.n_y * np.log(2. * np.pi)
+                - 0.5 * self.K.get_logdet())
         if not (self.Lambda is None):
-            logp += -0.5 * np.sum(c * self.Lambda.apply_inverse(c))
-        logp += self._partial_norm_const
-        logp += 0.5 * self.n_nlp * np.log(2. * np.pi)
+            logp += (-0.5 * np.sum(c * self.Lambda.apply_inverse(c))
+                     -0.5 * self.n_nlp * np.log(2. * np.pi)
+                     -0.5 * self.Lambda.get_logdet())
         return logp
