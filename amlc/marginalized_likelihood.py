@@ -42,7 +42,7 @@ class MarginalizedLikelihood(object):
             else:
                 error = ("Shape " + str(y_cov.shape) + " of y_cov is "
                          + "incompatible with the built-in CovarianceMatrix "
-                         + "types."
+                         + "types.")
                 raise ValueError(error)
 
         #Set prior and pre-compute part of normalization constant
@@ -67,7 +67,7 @@ class MarginalizedLikelihood(object):
                 else:
                     error = ("Shape " + str(c_cov.shape) + " of c_cov is "
                              + "incompatible with the built-in CovarianceMatrix"
-                             + " types."
+                             + " types.")
                     raise ValueError(error)
 
             self.Lambda_inv = self.Lambda.get_inverse()
@@ -103,9 +103,9 @@ class MarginalizedLikelihood(object):
                  jac_mu_m=None,
                  jac_mu_b=None,
                  n_c_draws=1):
-    """
-    Docstring
-    """
+        """
+        Docstring
+        """
         if not (return_logp or return_grad_logp or return_cmu or return_cmu_cov
                 or return_c_draws):
             return {}
