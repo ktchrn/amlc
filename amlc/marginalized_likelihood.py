@@ -136,8 +136,8 @@ class MarginalizedLikelihood(object):
 
     def __call__(self,
                  d_theta,
-                 mu_m,
-                 mu_b,
+                 mu_m=0,
+                 mu_b=0,
                  return_logp=False,
                  return_grad_logp=False,
                  return_cmu=False,
@@ -148,7 +148,62 @@ class MarginalizedLikelihood(object):
                  jac_mu_b=None,
                  n_c_draws=1):
         """
-        Docstring
+        Access point for the marginalized likelihood and its gradient, and
+        characteristics and samples from the conditional distribution of the
+        continuum and foreground parameters.
+
+        Parameters
+        ----------
+        d_theta : one-dimensional numpy array
+            Transmittances to multiply the continuum by.
+
+        mu_m : one-dimensional numpy array or number (optional)
+            The mean of the continuum model. Set to 0 by default.
+
+        mu_b : one-dimensional numpy array or number (optional)
+            The mean of the foreground model. Set to 0 by default.
+
+        return_logp : boolean (optional)
+            Whether to return the logarithm of the marginalized loglikelihood.
+
+        return_grad : boolean (optional)
+            Whether to return the gradient of the logarithm of the marginalized
+            loglikelihood.
+
+        return_cmu : boolean (optional)
+            Whether to return the conditional mean of the linear continuum and
+            foreground parameters.
+
+        return_cmu_cov : boolean (optional)
+            Whether to return the conditional covariance of the linear continuum
+            and foreground parameters.
+
+        return_c_draws : boolean (optional)
+            Whether to return draws from the conditional distribution of the
+            linear continuum and foreground parameters.
+
+        jac_d_theta: two-dimensional numpy array, number, or None (optional)
+            Derivatives of the transmittance with respect to the parameters
+            of interest. If d_theta does not depend on these parameters,
+            jac_d_theta should be set to 0. To compute the gradient, values for
+            all three Jacobians must be given.
+
+        jac_mu_m : as jac_d_theta (optional)
+            As jac_d_theta, but for the mean of the continuum model.
+
+        jac_mu_b : as jac_d_theta (optional)
+            As jac_d_theta, but for the mean of the foreground model.
+
+        n_c_draws : integer (optional)
+            Number of draws to return from the conditional distribution of the
+            linear continuum and foreground parameters.
+
+        Returns
+        -------
+        return_dict : dictionary
+            return_dict contains an entry for each return_(option)=True with key
+            (option). If only return_logp=True, return_dict = {'logp':(logp)}.
+
         """
         if not (return_logp or return_grad_logp or return_cmu or return_cmu_cov
                 or return_c_draws):
@@ -251,9 +306,28 @@ class MarginalizedLikelihood(object):
         grad_logp += -0.5 * np.sum(Cinv_BT_LT_Kinv_L * self.B_prime.T, axis=0)
         return grad_logp
 
-    def get_unmarginalized_likelihood(self, c, d_theta, mu_m, mu_b):
+    def get_unmarginalized_likelihood(self, c, d_theta, mu_m=0, mu_b=0):
         """
-        Docstring
+        The unmarginalized log-likelihood.
+
+        Parameters
+        ----------
+        c : one-dimensional numpy array
+            Linear continuum and foreground parameters.
+
+        d_theta : one-dimensional numpy array
+            Transmittances to multiply the continuum by.
+
+        mu_m : one-dimensional numpy array or number (optional)
+            The mean of the continuum model. Set to 0 by default.
+
+        mu_b : one-dimensional numpy array or number (optional)
+            The mean of the foreground model. Set to 0 by default.
+
+        Returns
+        -------
+        logp : number
+            The unmarginalized log-likelihood given the supplied parameters.
         """
         B = np.empty([self.n_dth, self.n_nlp])
         np.multiply(d_theta[:, None], self.A_m, out=B[:, :self.n_mnlp])
