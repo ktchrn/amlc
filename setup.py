@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(name='amlc',
       python_requires='>3.5',
-      version='1.1dev0',
+      version='1.1',
       description='Analytic marginalization over linear continuum parameters',
       author='Kirill Tchernyshyov',
       author_email='ktcherny@gmail.com',
