@@ -24,7 +24,7 @@ Basic usage
 ```
 from amlc.marginalized_likelihood import MarginalizedLikelihood
 
-marginalized\_likelihood\_instance = MarginalizedLikelihood(observed\_spectrum, variance_of_observed_spectrum, continuum_design_matrix)
+marginalized_likelihood_instance = MarginalizedLikelihood(observed_spectrum, variance_of_observed_spectrum, continuum_design_matrix)
 marginalized_likelihood_instance(proposed_transmittance_model, return_logp=True)['logp']
 ```
 
