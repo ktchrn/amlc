@@ -28,6 +28,17 @@ marginalized_likelihood_instance = MarginalizedLikelihood(observed_spectrum, var
 marginalized_likelihood_instance(proposed_transmittance_model, return_logp=True)['logp']
 ```
 
+
+Support
+-----------
+This material is based upon work supported by the National Science Foundation under Grant Number 1616177
+
+
+Disclaimer
+-----------
+Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.
+
+
 License
 -----
 This project is Copyright (c) Kirill Tchernyshyov and is licensed under the MIT
